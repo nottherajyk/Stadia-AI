@@ -1,0 +1,804 @@
+/* ============================================
+   StadiaAI - Interactive Stadium Map
+   ============================================ */
+
+.page {
+  padding-top: calc(var(--nav-height) + var(--space-xl));
+  padding-bottom: var(--space-3xl);
+  min-height: 100vh;
+  position: relative;
+  z-index: var(--z-base);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+/* --- Page Header --- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.subtitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* --- Main Layout --- */
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+/* --- Map Area --- */
+.mapArea {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.mapContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: rgba(19, 21, 26, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  cursor: grab;
+}
+
+.mapContainer:active {
+  cursor: grabbing;
+}
+
+/* --- SVG Stadium --- */
+.stadiumSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Stadium sections */
+.stadiumOutline {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 2;
+  transition: stroke var(--transition-base);
+}
+
+.zoneSection {
+  cursor: pointer;
+  transition: all var(--transition-base);
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.zoneSection:hover {
+  filter: brightness(1.4);
+  stroke: var(--primary);
+  stroke-width: 2;
+}
+
+.zoneSectionSelected {
+  stroke: var(--primary);
+  stroke-width: 2.5;
+  filter: brightness(1.3);
+  animation: selectedPulse 2s ease-in-out infinite;
+}
+
+@keyframes selectedPulse {
+  0%, 100% { filter: brightness(1.3); }
+  50% { filter: brightness(1.5); }
+}
+
+.field {
+  fill: #1a5c2e;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 1;
+}
+
+.fieldLine {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 0.8;
+}
+
+.fieldCenterCircle {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 0.8;
+}
+
+.fieldCenterDot {
+  fill: rgba(255, 255, 255, 0.35);
+}
+
+/* Gates */
+.gateMarker {
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.gateMarker:hover .gateCircle {
+  fill: var(--primary);
+  r: 14;
+}
+
+.gateCircle {
+  fill: rgba(59, 130, 246, 0.6);
+  stroke: var(--primary);
+  stroke-width: 1.5;
+  transition: all var(--transition-base);
+}
+
+.gateLabel {
+  fill: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+/* Facility markers */
+.facilityMarker {
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.facilityMarker:hover {
+  transform-origin: center;
+  filter: brightness(1.5) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+}
+
+.facilityIcon {
+  font-size: 14px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.facilityBg {
+  transition: all var(--transition-base);
+}
+
+/* Parking areas */
+.parkingArea {
+  fill: rgba(100, 116, 139, 0.15);
+  stroke: rgba(100, 116, 139, 0.3);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  rx: 6;
+  transition: all var(--transition-base);
+}
+
+.parkingArea:hover {
+  fill: rgba(100, 116, 139, 0.25);
+  stroke: rgba(100, 116, 139, 0.5);
+}
+
+.parkingLabel {
+  fill: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 9px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* Zone labels */
+.zoneLabel {
+  fill: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.zoneCapacity {
+  fill: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+/* Heatmap overlay */
+.heatmapOverlay {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-slow);
+}
+
+.heatmapVisible {
+  opacity: 0.55;
+}
+
+/* --- Map Controls --- */
+.mapControls {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  z-index: 10;
+}
+
+.controlBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(19, 21, 26, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.controlBtn:hover {
+  background: var(--surface-2);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.controlBtnActive {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Heatmap Toggle */
+.heatmapToggle {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 10;
+}
+
+.heatmapBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: rgba(19, 21, 26, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.heatmapBtn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.heatmapBtnActive {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.heatDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22C55E, #F59E0B, #EF4444);
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* --- Legend Panel --- */
+.legendTitle {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.legendItems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  user-select: none;
+}
+
+.legendItem:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.legendItemActive {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.legendItemInactive {
+  opacity: 0.4;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendIcon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.legendLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.legendToggle {
+  width: 32px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--surface-3);
+  position: relative;
+  flex-shrink: 0;
+  transition: background var(--transition-base);
+}
+
+.legendToggleActive {
+  background: var(--primary);
+}
+
+.legendToggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  transition: transform var(--transition-base);
+}
+
+.legendToggleActive::after {
+  transform: translateX(14px);
+}
+
+/* --- Zone Detail Panel --- */
+.zoneDetailPanel {
+  animation: slideInFromRight 0.3s ease forwards;
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.zoneDetailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.zoneDetailTitle {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.zoneDetailClose {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.zoneDetailClose:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.zoneStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.zoneStat {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.zoneStatLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.zoneStatValue {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.capacityBar {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--surface-3);
+  margin-top: var(--space-sm);
+  overflow: hidden;
+}
+
+.capacityFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.facilitiesSection {
+  margin-top: var(--space-md);
+}
+
+.facilitiesTitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-sm);
+}
+
+.facilityRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.facilityRow:last-child {
+  border-bottom: none;
+}
+
+.facilityRowLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.facilityRowEta {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.etaSection {
+  margin-top: var(--space-md);
+}
+
+.etaLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-xs);
+}
+
+.etaValue {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- ETA Bar --- */
+.etaBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  background: rgba(19, 21, 26, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.etaBarInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.etaBarTitle {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.etaBarItems {
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1;
+}
+
+.etaBarItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  transition: all var(--transition-base);
+  cursor: default;
+}
+
+.etaBarItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-hover);
+}
+
+.etaBarItemIcon {
+  font-size: 0.95rem;
+}
+
+.etaBarItemLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.etaBarItemTime {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+/* --- Map Compass --- */
+.compass {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-md);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(19, 21, 26, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.compassN {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+/* --- Stadium Info Badge --- */
+.stadiumInfoBadge {
+  position: absolute;
+  bottom: var(--space-md);
+  left: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: rgba(19, 21, 26, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  z-index: 10;
+}
+
+.stadiumInfoText {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stadiumInfoValue {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .mainLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding-bottom: 100px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .etaBarItems {
+    gap: var(--space-sm);
+  }
+
+  .etaBarItem {
+    padding: 4px 10px;
+  }
+
+  .etaBarTitle {
+    display: none;
+  }
+
+  .mapContainer {
+    aspect-ratio: 4 / 3;
+  }
+
+  .mapControls {
+    top: var(--space-sm);
+    right: var(--space-sm);
+  }
+
+  .heatmapToggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+  }
+
+  .zoneStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .etaBarItems {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+
+  .mapContainer {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .zoneDetailPanel {
+    animation: none;
+  }
+
+  .zoneSectionSelected {
+    animation: none;
+  }
+
+  .capacityFill {
+    transition: none;
+  }
+
+  .heatmapOverlay {
+    transition: none;
+  }
+}

@@ -1,0 +1,45 @@
+# dependencies
+stadia-ai/node_modules
+stadia-ai/.pnp
+stadia-ai/.pnp.*
+stadia-ai/.yarn/*
+!stadia-ai/.yarn/patches
+!stadia-ai/.yarn/plugins
+!stadia-ai/.yarn/releases
+!stadia-ai/.yarn/versions
+
+# testing
+stadia-ai/coverage
+
+# next.js
+stadia-ai/.next/
+stadia-ai/out/
+
+# production
+stadia-ai/build
+
+# misc
+.DS_Store
+*.pem
+stadia-ai/.DS_Store
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+stadia-ai/npm-debug.log*
+stadia-ai/yarn-debug.log*
+stadia-ai/yarn-error.log*
+
+# env files
+stadia-ai/.env*
+.env*
+
+# vercel
+stadia-ai/.vercel
+.vercel
+
+# typescript
+stadia-ai/*.tsbuildinfo
+stadia-ai/next-env.d.ts
